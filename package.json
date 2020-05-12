@@ -1,0 +1,15 @@
+{
+  "name": "process-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SASAO Takahiro <tsasao@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^4.0.1",
+    "date-utils": "^1.2.21"
+  }
+}

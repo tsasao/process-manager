@@ -1,0 +1,25 @@
+FROM python:3.7
+
+WORKDIR /app
+
+# install external command
+RUN (apt update && apt install -y poppler-utils && apt clean && rm -rf /var/lib/apt/lists/*)
+
+# install virtualenv
+RUN curl -sL https://github.com/pypa/virtualenv/archive/16.7.7.tar.gz | tar xzf -
+
+# install node
+RUN mkdir node
+RUN curl -s https://s3pository.heroku.com/node/v10.15.0/node-v10.15.0-linux-x64.tar.gz | tar --strip-components=1 -xz -C node
+ENV PATH $PATH:/app/node/bin
+
+# install node js packages
+COPY package.json package-lock.json ./
+RUN npm install
+
+# copy everything
+COPY . .
+
+RUN ./setup.sh
+
+ENTRYPOINT [ "./start.sh" ]

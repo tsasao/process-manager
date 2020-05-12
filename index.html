@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <style>
+      .log { overflow-y: scroll; max-height: 40ex; }
+    </style>
+    <script>
+      function escape(text) {
+          return $('<span></span>').text(text).html().replace(/\n/g, '<br />');
+      }
+      $.ajax({
+          url: '/status',
+      }).then(function(res) {
+          $('#age').text(res.age);
+          res.processes.forEach(function(p) {
+              var start_handler = (function(_p) {
+                  return function() {
+                      $.ajax({
+                          method: 'POST',
+                          url: '/command/'+_p.id,
+                          data: '{}',
+                      }).then(function() {
+                          location.reload();
+                      });
+                  };
+              })(p);
+              var stop_handler = (function(_p) {
+                  return function() {
+                      $.ajax({
+                          method: 'DELETE',
+                          url: '/command/'+_p.id,
+                      }).then(function() {
+                          location.reload();
+                      });
+                  };
+              })(p);
+              $('<tr></tr>')
+                  .append($('<td></td>').text(p.name))
+                  .append($('<td></td>').text(p.status))
+                  .append($('<td></td>')
+                          .append($('<button></button>')
+                                  .text('start')
+                                  .prop('disabled', p.status!='NONE')
+                                  .click(start_handler))
+                          .append($('<button></button>')
+                                  .text('stop')
+                                  .prop('disabled', p.status=='NONE')
+                                  .click(stop_handler))
+                  )
+                  .append($('<td></td>').append(
+                      $('<div></div>').addClass('log').html(escape(p.log.join("\n")))
+                  ))
+                  .appendTo($('tbody'));
+              $('div.log').each(function() { this.scrollTop = this.scrollHeight; });
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <div>age: <span id="age"></span></div>
+    <table border>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>status</th>
+          <th>action</th>
+          <th>log</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </body>
+</html>
+

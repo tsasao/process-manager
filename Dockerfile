@@ -7,6 +7,7 @@ RUN (apt update && apt install -y poppler-utils && apt clean && rm -rf /var/lib/
 
 # install virtualenv
 RUN curl -sL https://github.com/pypa/virtualenv/archive/16.7.7.tar.gz | tar xzf -
+ENV PATH $PATH:/app/virtualenv-16.7.7
 
 # install node
 RUN mkdir node
@@ -20,6 +21,6 @@ RUN npm install
 # copy everything
 COPY . .
 
-RUN ./setup.sh
+RUN ./build.sh
 
 ENTRYPOINT [ "./start.sh" ]
